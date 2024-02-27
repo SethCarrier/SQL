@@ -39,3 +39,60 @@ JOIN chinook.employees e
 ON c.SupportRepid=e.Employeeid
 JOIN chinook.invoices i
 ON c.Customerid = i.Customerid;
+
+#8. How many Invoices were there in 2009?
+SELECT COUNT(Invoiceid)
+FROM chinook.Invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+
+#9. What are the total sales for 2009?
+SELECT SUM(Total)
+FROM chinook.Invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+
+#10. Write a query that includes the purchased track name with each invoice line ID.
+SELECT t.Name, i.InvoiceLineId
+FROM chinook.Invoice_items i
+JOIN chinook.Tracks t 
+ON i.TrackId = t.TrackId;
+
+#11. Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT t.Name, art.Name, i.InvoiceLineid
+FROM chinook.Invoice_items i
+LEFT JOIN chinook.tracks t
+ON i.Trackid=t.Trackid
+INNER JOIN chinook.albums a
+ON t.Albumid=a.Albumid
+LEFT JOIN chinook.artists art
+ON a.Artistid=art.Artistid;
+
+#12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT t.Name AS TrackName, a.title AS Album, m.Name AS Media, g.Name AS Genre
+FROM chinook.tracks t
+JOIN chinook.albums a
+ON t.Albumid=a.AlbumId
+JOIN chinook.genres g
+ON t.Genreid=g.Genreid
+JOIN chinook.media_types m
+ON t.MediaTypeid=m.MediaTypeid;
+
+#13. Show the total sales made by each sales agent.
+SELECT e.FirstName, e.LastName, ROUND(SUM(Inv.Total), 2)
+FROM chinook.Employees e
+JOIN chinook.customers c
+ON e.Employeeid=c.SupportRepid
+JOIN chinook.invoices Inv
+ON c.Customerid=Inv.Customerid
+GROUP BY e.FirstName
+
+#14. Which sales agent made the most dollars in sales in 2009?
+SELECT e.FirstName, e.LastName, ROUND(SUM(Inv.Total), 2) AS TotalSales
+FROM chinook.Employees e
+JOIN chinook.customers c
+ON e.Employeeid=c.SupportRepid
+JOIN chinook.invoices Inv
+ON c.Customerid=Inv.Customerid
+WHERE Inv.InvoiceDate like'2009%'
+GROUP BY e.FirstName
+ORDER BY TotalSales desc
+LIMIT 1
